@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact Us — GreyTox Surgical Instruments</title>
+<link rel="icon" href="assets/logo/logo.png" />
+<link rel="stylesheet" href="css/style.css" />
+<style>
+  .contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:44px}
+  @media (max-width:860px){.contact-grid{grid-template-columns:1fr}}
+  .info-line{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+  .info-line .ico{width:40px;height:40px;border-radius:9px;background:var(--c-green-100);color:var(--c-green-700);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .info-line b{display:block;font-size:14px}
+  .info-line span{font-size:14px;color:var(--c-silver-700)}
+</style>
+</head>
+<body>
+
+<div id="headerRoot"></div>
+
+<section class="section">
+  <div class="container">
+    <div class="sec-head mt-0">
+      <span class="eyebrow">Get In Touch</span>
+      <h2>Contact Us</h2>
+      <p>Questions about products, pricing, or bulk export orders? Send us a message.</p>
+    </div>
+    <div class="contact-grid">
+      <div id="contactInfo">
+        <div class="skeleton" style="height:120px"></div>
+      </div>
+      <div class="form-card">
+        <form id="contactForm">
+          <div class="form-grid">
+            <div class="field"><label>Full Name</label><input type="text" name="name" required /></div>
+            <div class="field"><label>Email</label><input type="email" name="email" required /></div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Phone / WhatsApp</label><input type="text" name="phone" /></div>
+            <div class="field"><label>Country</label><input type="text" name="country" /></div>
+          </div>
+          <div class="field"><label>Subject</label><input type="text" name="subject" required /></div>
+          <div class="field"><label>Message</label><textarea name="message" required></textarea></div>
+          <button type="submit" class="btn btn-primary btn-block" id="contactSubmit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footerRoot"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/components.js"></script>
+<script>
+(async function () {
+  await initGreyToxPage("contact.html");
+  const settings = await getSiteSettings();
+  document.getElementById("contactInfo").innerHTML = `
+    <div class="info-line"><div class="ico">📍</div><div><b>Address</b><span>${escapeHtml(settings.address)}</span></div></div>
+    <div class="info-line"><div class="ico">✆</div><div><b>Phone / WhatsApp</b><span>${escapeHtml(settings.phone)}</span></div></div>
+    <div class="info-line"><div class="ico">✉</div><div><b>Email</b><span>${escapeHtml(settings.email1)}<br/>${escapeHtml(settings.email2)}</span></div></div>
+    <a class="btn btn-whatsapp" target="_blank" rel="noopener" href="${waLink(settings.whatsapp, 'Hello GreyTox, I have a question.')}">💬 Chat on WhatsApp</a>
+  `;
+
+  document.getElementById("contactForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("contactSubmit");
+    btn.disabled = true; btn.textContent = "Sending...";
+    const fd = new FormData(e.target);
+    const payload = Object.fromEntries(fd.entries());
+    try {
+      await db.collection("contactMessages").add({ ...payload, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      const r = await submitToWeb3Forms({ subject: `Contact Us: ${payload.subject}`, ...payload });
+      if (r.success) {
+        toast("Message bhej diya gaya — hum jald reply karenge.");
+        e.target.reset();
+      } else {
+        toast("Message save ho gaya, lekin email nahi ja saka. Hum jald check karenge.", "error");
+      }
+    } catch (err) {
+      toast("Kuch masla hua: " + err.message, "error");
+    } finally {
+      btn.disabled = false; btn.textContent = "Send Message";
+    }
+  });
+})();
+</script>
+</body>
+</html>

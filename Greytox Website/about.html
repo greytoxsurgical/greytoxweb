@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About Us — GreyTox Surgical Instruments</title>
+<link rel="icon" href="assets/logo/logo.png" />
+<link rel="stylesheet" href="css/style.css" />
+<style>
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  @media (max-width:860px){.about-grid{grid-template-columns:1fr}}
+  .about-grid img{border-radius:14px;box-shadow:var(--shadow-md)}
+</style>
+</head>
+<body>
+
+<div id="headerRoot"></div>
+
+<section class="section">
+  <div class="container about-grid">
+    <div>
+      <span class="eyebrow" style="font-family:var(--font-display);font-weight:600;letter-spacing:.14em;color:var(--c-green-700);font-size:13px;text-transform:uppercase">Our Story</span>
+      <h1 style="font-size:38px;margin-top:8px">About GreyTox</h1>
+      <div class="stitch"></div>
+      <div class="rich-content" id="aboutContent">
+        <div class="skeleton" style="height:22px;margin-bottom:10px"></div>
+        <div class="skeleton" style="height:22px;margin-bottom:10px;width:90%"></div>
+        <div class="skeleton" style="height:22px;width:80%"></div>
+      </div>
+    </div>
+    <div>
+      <img id="aboutImage" src="assets/logo/logo.png" alt="GreyTox facility" style="width:100%" />
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--c-silver-100)">
+  <div class="container">
+    <div class="grid grid-3">
+      <div class="feature-card"><div class="ico">🏭</div><h3>Sialkot Manufacturing</h3><p>Every instrument is forged, ground and polished in-house at our Sialkot facility.</p></div>
+      <div class="feature-card"><div class="ico">🌐</div><h3>Global Reach</h3><p>Serving hospitals, clinics and distributors across 50+ countries.</p></div>
+      <div class="feature-card"><div class="ico">✎</div><h3>Custom Branding</h3><p>Free laser-etched branding on every export order, at no extra cost.</p></div>
+    </div>
+  </div>
+</section>
+
+<div id="footerRoot"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/components.js"></script>
+<script>
+(async function () {
+  await initGreyToxPage("about.html");
+  try {
+    const doc = await db.collection("settings").doc("about").get();
+    if (doc.exists) {
+      const d = doc.data();
+      if (d.content) document.getElementById("aboutContent").innerHTML = d.content;
+      if (d.imageUrl) document.getElementById("aboutImage").src = d.imageUrl;
+    } else {
+      document.getElementById("aboutContent").innerHTML = `<p>GreyTox Surgical Instruments is a Sialkot-based manufacturer and worldwide exporter of surgical, orthopedic, dental and veterinary instruments. Content ko Admin Panel > About Us se edit karen.</p>`;
+    }
+  } catch (e) {
+    document.getElementById("aboutContent").innerHTML = `<p>Content load nahi ho saka.</p>`;
+  }
+})();
+</script>
+</body>
+</html>

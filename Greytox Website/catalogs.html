@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catalogs — GreyTox Surgical Instruments</title>
+<link rel="icon" href="assets/logo/logo.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div id="headerRoot"></div>
+
+<section class="section">
+  <div class="container">
+    <div class="sec-head mt-0">
+      <span class="eyebrow">Downloads</span>
+      <h2>Product Catalogs</h2>
+      <p>Download our latest PDF catalogs for your reference or distribution.</p>
+    </div>
+    <div class="grid grid-3" id="catalogList">
+      <div class="skeleton" style="height:100px"></div>
+      <div class="skeleton" style="height:100px"></div>
+    </div>
+  </div>
+</section>
+
+<div id="footerRoot"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/components.js"></script>
+<script>
+(async function () {
+  await initGreyToxPage("catalogs.html");
+  const root = document.getElementById("catalogList");
+  try {
+    const snap = await db.collection("catalogs").orderBy("createdAt", "desc").get();
+    if (snap.empty) {
+      root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Catalogs jald hi upload ki jayengi.</div>`;
+      return;
+    }
+    root.innerHTML = snap.docs.map((d) => {
+      const c = d.data();
+      return `
+      <a href="${c.fileUrl}" target="_blank" rel="noopener" class="cat-card">
+        <div class="cat-card__ico">📄</div>
+        <div class="cat-card__info">
+          <b>${escapeHtml(c.title)}</b>
+          <span>PDF · ${timeAgo(c.createdAt)}</span>
+        </div>
+      </a>`;
+    }).join("");
+  } catch (e) {
+    root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Load error.</div>`;
+  }
+})();
+</script>
+</body>
+</html>

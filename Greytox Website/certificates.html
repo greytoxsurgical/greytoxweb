@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Certificates — GreyTox Surgical Instruments</title>
+<link rel="icon" href="assets/logo/logo.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div id="headerRoot"></div>
+
+<section class="section-tight" style="background:var(--c-silver-100)">
+  <div class="container">
+    <div class="sec-head mt-0">
+      <span class="eyebrow">Quality Assurance</span>
+      <h2>Certificates &amp; Compliance</h2>
+      <p>GreyTox instruments are manufactured to internationally recognized quality standards. Certificate previews are watermark-protected — contact us for verified copies.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-4" id="certGrid">
+      <div class="skeleton" style="height:340px"></div>
+      <div class="skeleton" style="height:340px"></div>
+      <div class="skeleton" style="height:340px"></div>
+      <div class="skeleton" style="height:340px"></div>
+    </div>
+  </div>
+</section>
+
+<div id="footerRoot"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/components.js"></script>
+<script>
+(async function () {
+  await initGreyToxPage("certificates.html");
+  const root = document.getElementById("certGrid");
+  try {
+    const snap = await db.collection("certificates").orderBy("createdAt", "desc").get();
+    if (snap.empty) {
+      root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Certificates jald hi upload ki jayengi.</div>`;
+      return;
+    }
+    root.innerHTML = snap.docs.map((d) => {
+      const c = d.data();
+      return `
+      <div class="cert-card">
+        <div class="cert-card__img">
+          <img src="${c.imageUrl}" alt="${escapeHtml(c.title)}" />
+          <div class="cert-card__lock">🔒 Hover to preview</div>
+        </div>
+        <div class="cert-card__cap">${escapeHtml(c.title)}</div>
+      </div>`;
+    }).join("");
+  } catch (e) {
+    root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Load error.</div>`;
+  }
+})();
+</script>
+</body>
+</html>

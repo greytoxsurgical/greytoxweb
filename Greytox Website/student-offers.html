@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Offers — GreyTox Surgical Instruments</title>
+<link rel="icon" href="assets/logo/logo.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div id="headerRoot"></div>
+
+<section class="section-tight" style="background:var(--c-green-900);color:#fff">
+  <div class="container text-center">
+    <span class="eyebrow" style="color:#bdeed6;font-family:var(--font-display);font-weight:600;letter-spacing:.14em;font-size:13px;text-transform:uppercase">Limited Time</span>
+    <h2 style="color:#fff;font-size:clamp(28px,4vw,44px);margin-top:6px">Student Offer — 50% Off</h2>
+    <p style="color:#d6ede1;max-width:520px;margin:10px auto 0">Medical &amp; nursing students get 50% off on selected instruments. Valid student ID required at checkout.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-4" id="studentGrid">
+      <div class="skeleton" style="height:300px"></div>
+      <div class="skeleton" style="height:300px"></div>
+      <div class="skeleton" style="height:300px"></div>
+      <div class="skeleton" style="height:300px"></div>
+    </div>
+  </div>
+</section>
+
+<div id="footerRoot"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+(async function () {
+  await initGreyToxPage("student-offers.html");
+  const root = document.getElementById("studentGrid");
+  try {
+    const snap = await db.collection("products").where("studentOffer", "==", true).get();
+    if (snap.empty) {
+      root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Student offer products jald hi add honge.</div>`;
+      return;
+    }
+    root.innerHTML = snap.docs.map((d) => productCardHTML(d.id, d.data())).join("");
+  } catch (e) {
+    root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Load error.</div>`;
+  }
+})();
+</script>
+</body>
+</html>
