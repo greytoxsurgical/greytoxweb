@@ -20,7 +20,7 @@ const firebaseConfig = {
 
 // Web3Forms access key — https://web3forms.com par free signup karke milegi.
 // Contact Us aur Make a Deal forms isi key se seedha email par pohanchte hain.
-const WEB3FORMS_ACCESS_KEY = "PASTE_YOUR_WEB3FORMS_ACCESS_KEY";
+const WEB3FORMS_ACCESS_KEY = "140c99f8-f54b-4fc1-bb41-171ccf847d1a";
 
 // Contact Us aur Make a Deal submissions inhi emails par jayengi (comma se multiple).
 const NOTIFY_EMAILS = "greytoxsurgical@gmail.com, sales@greytox.com";
