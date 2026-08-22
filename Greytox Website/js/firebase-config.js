@@ -10,7 +10,7 @@
    ========================================================= */
 
 const firebaseConfig = {
-   apiKey: "AIzaSyB3etHr49OXjX-X3-DfoWZk1vbz_Y67ysg",
+  apiKey: "AIzaSyB3etHr49OXjX-X3-DfoWZk1vbz_Y67ysg",
   authDomain: "greytoxweb.firebaseapp.com",
   projectId: "greytoxweb",
   storageBucket: "greytoxweb.firebasestorage.app",
