@@ -179,19 +179,18 @@ async function renderCategoriesTab(root) {
         <button class="btn btn-primary btn-sm" id="addCatBtn">+ Add Category</button>
       </div>
       <table class="admin-table">
-        <thead><tr><th>Icon</th><th>Name</th><th></th></tr></thead>
+        <thead><tr><th>Name</th><th></th></tr></thead>
         <tbody>
           ${snap.docs.map((d) => {
             const c = d.data();
             return `<tr>
-              <td style="font-size:20px">${c.icon || "⚕"}</td>
               <td>${escapeHtml(c.name)}</td>
               <td class="row-actions">
                 <button class="edit" onclick="editCategory('${d.id}')">Edit</button>
                 <button class="del" onclick="deleteItem('categories','${d.id}','categories')">Delete</button>
               </td>
             </tr>`;
-          }).join("") || `<tr><td colspan="3" class="muted">Koi category nahi.</td></tr>`}
+          }).join("") || `<tr><td colspan="2" class="muted">Koi category nahi.</td></tr>`}
         </tbody>
       </table>
     </div>
@@ -203,7 +202,6 @@ function categoryDrawer(id, data) {
   openDrawer(`
     <h3>${id ? "Edit" : "Add"} Category</h3>
     <form id="catForm">
-      <div class="field"><label>Icon (emoji)</label><input type="text" id="catIcon" value="${data?.icon || "⚕"}" maxlength="4" /></div>
       <div class="field"><label>Name</label><input type="text" id="catName" value="${escapeHtml(data?.name || "")}" required /></div>
       <button type="submit" class="btn btn-primary btn-block">${id ? "Save Changes" : "Add Category"}</button>
     </form>
@@ -211,10 +209,9 @@ function categoryDrawer(id, data) {
   document.getElementById("catForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("catName").value.trim();
-    const icon = document.getElementById("catIcon").value.trim();
     try {
-      if (id) await db.collection("categories").doc(id).update({ name, icon });
-      else await db.collection("categories").add({ name, icon });
+      if (id) await db.collection("categories").doc(id).update({ name });
+      else await db.collection("categories").add({ name });
       toast("Category saved.");
       closeDrawer();
       renderTab("categories");
