@@ -10,12 +10,13 @@
    ========================================================= */
 
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID"
+  apiKey: "AIzaSyB3etHr49OXjX-X3-DfoWZk1vbz_Y67ysg",
+  authDomain: "greytoxweb.firebaseapp.com",
+  databaseURL: "https://greytoxweb-default-rtdb.firebaseio.com",
+  projectId: "greytoxweb",
+  storageBucket: "greytoxweb.firebasestorage.app",
+  messagingSenderId: "316301158430",
+  appId: "1:316301158430:web:ea1bf7be8f81bae094a60f"
 };
 
 // Web3Forms access key — https://web3forms.com par free signup karke milegi.
