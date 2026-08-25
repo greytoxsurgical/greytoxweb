@@ -18,6 +18,20 @@ function toast(msg, type = "success") {
 }
 
 /* ---------- WhatsApp link builder ---------- */
+/* ---------- Google Drive / external URL helper ----------
+   Converts a normal Google Drive "share" link into a direct-view
+   link so it can be used as an <img src>. Leaves other URLs
+   (Dropbox, direct links, etc.) untouched. Works only if the
+   Drive file's sharing is set to "Anyone with the link". */
+function normalizeDriveImageUrl(url) {
+  if (!url) return url;
+  const m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (m && m[1]) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m2 && m2[1] && url.includes("drive.google.com")) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
+  return url;
+}
+
 function waLink(phone, message) {
   const clean = (phone || "").replace(/[^0-9]/g, "");
   return `https://wa.me/${clean}?text=${encodeURIComponent(message || "")}`;
@@ -97,12 +111,13 @@ async function applyThemeColors() {
 
 /* ---------- Site settings (contact info, socials) shared across pages ---------- */
 async function getSiteSettings() {
+  if (window.__siteSettingsCache) return window.__siteSettingsCache;
   const doc = await db.collection("settings").doc("general").get();
-  return doc.exists
+  const data = doc.exists
     ? doc.data()
     : {
-        phone: "+17747341471",
-        whatsapp: "+17747341471",
+        phone: "+923144122237",
+        whatsapp: "+923144122237",
         email1: "greytoxsurgical@gmail.com",
         email2: "sales@greytox.com",
         address: "Sialkot 51010, Pakistan",
@@ -111,6 +126,8 @@ async function getSiteSettings() {
         tiktok: "",
         linkedin: "",
       };
+  window.__siteSettingsCache = data;
+  return data;
 }
 
 /* ---------- Admin session ---------- */

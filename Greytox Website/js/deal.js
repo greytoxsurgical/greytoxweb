@@ -50,6 +50,7 @@ let dealRowCount = 0;
         dealRowCount = 0;
         addDealRow();
       } else {
+        console.error("Web3Forms response:", r);
         toast("Save ho gaya lekin email nahi ja saka.", "error");
       }
     } catch (err) {

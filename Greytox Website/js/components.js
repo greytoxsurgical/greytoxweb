@@ -22,7 +22,7 @@ async function renderHeader(activePage) {
 
   const slides = [
     `📍 ${escapeHtml(settings.address || "Sialkot 51010, Pakistan")}`,
-    `✆ ${escapeHtml(settings.phone || "+17747341471")}`,
+    `✆ ${escapeHtml(settings.phone || "+923144122237")}`,
     `✉ ${escapeHtml(settings.email1 || "greytoxsurgical@gmail.com")}`,
     `Worldwide export with free custom branding on every order`,
   ];
@@ -129,7 +129,7 @@ async function renderFooter() {
             <h4>Get in Touch</h4>
             <ul>
               <li>${escapeHtml(settings.address || "Sialkot 51010, Pakistan")}</li>
-              <li>${escapeHtml(settings.phone || "+17747341471")}</li>
+              <li>${escapeHtml(settings.phone || "+923144122237")}</li>
               <li>${escapeHtml(settings.email1 || "greytoxsurgical@gmail.com")}</li>
               <li>${escapeHtml(settings.email2 || "sales@greytox.com")}</li>
             </ul>

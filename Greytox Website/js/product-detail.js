@@ -41,7 +41,7 @@
           <div class="rich-content">${p.description || "<p>No description provided.</p>"}</div>
           <div style="display:flex;gap:12px;margin-top:26px;flex-wrap:wrap">
             <a class="btn btn-whatsapp" target="_blank" rel="noopener"
-               href="${waLink(p.waPhone || "+17747341471", `Hello GreyTox, I'm interested in: ${p.name}`)}">
+               href="${waLink(p.waPhone || (window.__siteSettingsCache && window.__siteSettingsCache.whatsapp) || "+923144122237", `Hello GreyTox, I'm interested in: ${p.name}`)}">
                💬 Order Now on WhatsApp
             </a>
             <a class="btn btn-outline" href="products.html">← Back to Products</a>

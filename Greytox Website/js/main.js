@@ -72,7 +72,7 @@ function productCardHTML(id, p) {
       <div class="card-product__foot">
         ${price}
         <a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"
-           href="${waLink(p.waPhone || '+17747341471', `Hello GreyTox, I'm interested in: ${p.name}`)}">Order Now</a>
+           href="${waLink(p.waPhone || (window.__siteSettingsCache && window.__siteSettingsCache.whatsapp) || '+923144122237', `Hello GreyTox, I'm interested in: ${p.name}`)}">Order Now</a>
       </div>
     </div>
   </div>`;

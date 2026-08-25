@@ -81,6 +81,7 @@
         toast("Message bhej diya gaya — hum jald reply karenge.");
         e.target.reset();
       } else {
+        console.error("Web3Forms response:", r);
         toast("Message save ho gaya, lekin email nahi ja saka. Hum jald check karenge.", "error");
       }
     } catch (err) {

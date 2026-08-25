@@ -179,33 +179,34 @@ h1,h2,h3,h4{
 .hero{
   position:relative;
   background:
-    radial-gradient(1100px 500px at 85% -10%, var(--c-green-100), transparent 60%),
-    linear-gradient(180deg,#fff,var(--c-silver-100));
-  padding:90px 0 70px;
+    linear-gradient(100deg, rgba(16,24,27,.92) 0%, rgba(16,24,27,.72) 40%, rgba(16,24,27,.35) 75%, rgba(16,24,27,.15) 100%),
+    url('assets/hero/hero-instruments.jpg');
+  background-size:cover;
+  background-position:center;
+  padding:110px 0 90px;
   overflow:hidden;
+  min-height:560px;
+  display:flex;align-items:center;
 }
-.hero__grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.hero__grid{display:grid;grid-template-columns:1fr;gap:0;align-items:center}
 .hero__eyebrow{
   display:inline-flex;align-items:center;gap:8px;
   font-family:var(--font-display);font-weight:600;letter-spacing:.14em;
-  color:var(--c-green-700);font-size:13.5px;text-transform:uppercase;
-  border:1px solid var(--c-green-700);border-radius:999px;padding:6px 14px;
+  color:var(--c-green-400,#3fc491);font-size:13.5px;text-transform:uppercase;
+  border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:6px 14px;
 }
-.hero h1{font-size:clamp(38px,5.2vw,64px)}
-.hero p.lead{font-size:18px;color:var(--c-silver-900);max-width:52ch;margin:18px 0 28px}
+.hero h1{font-size:clamp(34px,5vw,58px);color:#fff;max-width:16ch}
+.hero p.lead{font-size:18px;color:rgba(255,255,255,.85);max-width:52ch;margin:18px 0 28px}
 .hero__actions{display:flex;gap:14px;flex-wrap:wrap}
 .hero__stats{display:flex;gap:34px;margin-top:44px;flex-wrap:wrap}
 .hero__stats div b{
-  font-family:var(--font-display);font-size:32px;display:block;color:var(--c-ink);
+  font-family:var(--font-display);font-size:32px;display:block;color:#fff;
 }
-.hero__stats div span{font-size:13px;color:var(--c-silver-700);text-transform:uppercase;letter-spacing:.05em}
-.hero__art{
-  position:relative;background:var(--c-white);border-radius:20px;
-  box-shadow:var(--shadow-lg);padding:34px;
-  border:1px solid var(--c-silver-200);
+.hero__stats div span{font-size:13px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.05em}
+@media (max-width:900px){
+  .hero{background-position:65% center;padding:80px 0 60px;min-height:480px}
+  .hero h1{max-width:none}
 }
-.hero__art img{border-radius:12px}
-@media (max-width:900px){.hero__grid{grid-template-columns:1fr}}
 
 /* ---------- Section heading ---------- */
 .sec-head{max-width:640px;margin-bottom:36px}
@@ -412,7 +413,8 @@ h1,h2,h3,h4{
 
 /* whatsapp float */
 .wa-float{
-  position:fixed;bottom:22px;left:22px;width:56px;height:56px;border-radius:50%;background:#25D366;
-  display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);z-index:150;font-size:26px;
+  position:fixed;bottom:22px;left:22px;width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);z-index:150;
+  overflow:hidden;
 }
-.wa-float img{width:28px;height:28px;filter:brightness(0) invert(1)}
+.wa-float img{width:100%;height:100%;object-fit:cover}

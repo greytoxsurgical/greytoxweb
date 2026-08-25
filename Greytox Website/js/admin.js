@@ -301,7 +301,7 @@ function productDrawer(id, data) {
         <label style="display:flex;align-items:center;gap:8px;font-size:14px"><input type="checkbox" id="pStudent" ${data?.studentOffer ? "checked" : ""}/> Student Offer (50% off)</label>
         <label style="display:flex;align-items:center;gap:8px;font-size:14px"><input type="checkbox" id="pFeatured" ${data?.featured ? "checked" : ""}/> Featured on Home</label>
       </div>
-      <div class="field"><label>Custom WhatsApp number for this product (optional)</label><input type="text" id="pWaPhone" value="${data?.waPhone || ""}" placeholder="+17747341471" /></div>
+      <div class="field"><label>Custom WhatsApp number for this product (optional)</label><input type="text" id="pWaPhone" value="${data?.waPhone || ""}" placeholder="+923144122237" /></div>
 
       <div class="field">
         <label>Product Images (auto-cropped to 1080×1080)</label>
@@ -436,26 +436,54 @@ async function renderCertificatesTab(root) {
       <h3>Upload Certificate</h3>
       <form id="certForm">
         <div class="field"><label>Title</label><input type="text" id="certTitle" required placeholder="e.g. ISO 13485:2016" /></div>
-        <div class="field"><label>Certificate Image (A4, auto blur-protected on site)</label><input type="file" id="certFile" accept="image/*" required /></div>
+        <div class="field">
+          <label>Certificate Source</label>
+          <div style="display:flex;gap:16px;margin-bottom:10px">
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="certSrc" value="file" checked /> Upload File</label>
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="certSrc" value="url" /> Paste URL (Google Drive, etc.)</label>
+          </div>
+        </div>
+        <div class="field" id="certFileField"><label>Certificate Image (A4, auto blur-protected on site)</label><input type="file" id="certFile" accept="image/*" /></div>
+        <div class="field" id="certUrlField" style="display:none">
+          <label>Image URL</label>
+          <input type="url" id="certUrl" placeholder="https://drive.google.com/file/d/.../view" />
+          <p class="form-note">Google Drive link paste kar sakte hain — bas Drive file ki sharing "Anyone with the link" per honi chahiye. Link automatically convert ho jayega.</p>
+        </div>
         <button type="submit" class="btn btn-primary btn-block" id="certSaveBtn">Upload</button>
       </form>
     `);
+    document.querySelectorAll('input[name="certSrc"]').forEach((r) => {
+      r.addEventListener("change", () => {
+        const isUrl = document.querySelector('input[name="certSrc"]:checked').value === "url";
+        document.getElementById("certFileField").style.display = isUrl ? "none" : "block";
+        document.getElementById("certUrlField").style.display = isUrl ? "block" : "none";
+        document.getElementById("certFile").required = !isUrl;
+      });
+    });
     document.getElementById("certForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("certSaveBtn");
-      const file = document.getElementById("certFile").files[0];
-      if (!file) return;
-      btn.disabled = true; btn.textContent = "Uploading...";
+      const useUrl = document.querySelector('input[name="certSrc"]:checked').value === "url";
+      btn.disabled = true; btn.textContent = useUrl ? "Saving..." : "Uploading...";
       try {
-        const blob = await resizeImageA4(file);
-        const path = `certificates/${Date.now()}.jpg`;
-        const url = await uploadToStorage(path, blob);
+        let url;
+        if (useUrl) {
+          const raw = document.getElementById("certUrl").value.trim();
+          if (!raw) { toast("URL daalain.", "error"); btn.disabled = false; btn.textContent = "Upload"; return; }
+          url = normalizeDriveImageUrl(raw);
+        } else {
+          const file = document.getElementById("certFile").files[0];
+          if (!file) { btn.disabled = false; btn.textContent = "Upload"; return; }
+          const blob = await resizeImageA4(file);
+          const path = `certificates/${Date.now()}.jpg`;
+          url = await uploadToStorage(path, blob);
+        }
         await db.collection("certificates").add({
           title: document.getElementById("certTitle").value.trim(),
           imageUrl: url,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
-        toast("Certificate uploaded.");
+        toast("Certificate saved.");
         closeDrawer();
         renderTab("certificates");
       } catch (err) { toast(err.message, "error"); }
@@ -541,19 +569,46 @@ function catalogDrawer(id) {
     <h3>${id ? "Reupload" : "Upload"} Catalog</h3>
     <form id="catalogForm">
       <div class="field"><label>Title</label><input type="text" id="catalogTitle" required placeholder="e.g. GreyTox Full Catalog 2026" /></div>
-      <div class="field"><label>PDF File</label><input type="file" id="catalogFile" accept="application/pdf" required /></div>
+      <div class="field">
+        <label>Catalog Source</label>
+        <div style="display:flex;gap:16px;margin-bottom:10px">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="catalogSrc" value="file" checked /> Upload PDF</label>
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="catalogSrc" value="url" /> Paste URL (Google Drive, etc.)</label>
+        </div>
+      </div>
+      <div class="field" id="catalogFileField"><label>PDF File</label><input type="file" id="catalogFile" accept="application/pdf" /></div>
+      <div class="field" id="catalogUrlField" style="display:none">
+        <label>PDF URL</label>
+        <input type="url" id="catalogUrl" placeholder="https://drive.google.com/file/d/.../view" />
+        <p class="form-note">Google Drive link paste kar sakte hain — bas Drive file ki sharing "Anyone with the link" per honi chahiye.</p>
+      </div>
       <button type="submit" class="btn btn-primary btn-block" id="catalogSaveBtn">Upload</button>
     </form>
   `);
+  document.querySelectorAll('input[name="catalogSrc"]').forEach((r) => {
+    r.addEventListener("change", () => {
+      const isUrl = document.querySelector('input[name="catalogSrc"]:checked').value === "url";
+      document.getElementById("catalogFileField").style.display = isUrl ? "none" : "block";
+      document.getElementById("catalogUrlField").style.display = isUrl ? "block" : "none";
+      document.getElementById("catalogFile").required = !isUrl;
+    });
+  });
   document.getElementById("catalogForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("catalogSaveBtn");
-    const file = document.getElementById("catalogFile").files[0];
-    if (!file) return;
-    btn.disabled = true; btn.textContent = "Uploading...";
+    const useUrl = document.querySelector('input[name="catalogSrc"]:checked').value === "url";
+    btn.disabled = true; btn.textContent = useUrl ? "Saving..." : "Uploading...";
     try {
-      const path = `catalogs/${Date.now()}_${file.name}`;
-      const url = await uploadToStorage(path, file);
+      let url;
+      if (useUrl) {
+        url = document.getElementById("catalogUrl").value.trim();
+        if (!url) { toast("URL daalain.", "error"); btn.disabled = false; btn.textContent = "Upload"; return; }
+      } else {
+        const file = document.getElementById("catalogFile").files[0];
+        if (!file) { btn.disabled = false; btn.textContent = "Upload"; return; }
+        const path = `catalogs/${Date.now()}_${file.name}`;
+        url = await uploadToStorage(path, file);
+      }
       const payload = { title: document.getElementById("catalogTitle").value.trim(), fileUrl: url, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
       if (id) await db.collection("catalogs").doc(id).update(payload);
       else await db.collection("catalogs").add(payload);
@@ -748,8 +803,8 @@ async function renderSettingsTab(root) {
   root.innerHTML = `
     <div class="admin-panel">
       <div class="form-grid">
-        <div class="field"><label>Phone Number</label><input type="text" id="sPhone" value="${escapeHtml(s.phone || "+17747341471")}" /></div>
-        <div class="field"><label>WhatsApp Number</label><input type="text" id="sWhatsapp" value="${escapeHtml(s.whatsapp || "+17747341471")}" /></div>
+        <div class="field"><label>Phone Number</label><input type="text" id="sPhone" value="${escapeHtml(s.phone || "+923144122237")}" /></div>
+        <div class="field"><label>WhatsApp Number</label><input type="text" id="sWhatsapp" value="${escapeHtml(s.whatsapp || "+923144122237")}" /></div>
       </div>
       <div class="form-grid">
         <div class="field"><label>Email 1</label><input type="email" id="sEmail1" value="${escapeHtml(s.email1 || "greytoxsurgical@gmail.com")}" /></div>
@@ -766,7 +821,7 @@ async function renderSettingsTab(root) {
         <div class="field"><label>TikTok URL</label><input type="text" id="sTiktok" value="${escapeHtml(s.tiktok || "")}" placeholder="https://tiktok.com/@greytox" /></div>
         <div class="field"><label>LinkedIn URL</label><input type="text" id="sLinkedin" value="${escapeHtml(s.linkedin || "")}" placeholder="https://linkedin.com/company/greytox" /></div>
       </div>
-      <p class="muted" style="font-size:13px">WhatsApp icon apne aap "${s.whatsapp || "+17747341471"}" number khol dega — alag URL ki zaroorat nahi.</p>
+      <p class="muted" style="font-size:13px">WhatsApp icon apne aap "${s.whatsapp || "+923144122237"}" number khol dega — alag URL ki zaroorat nahi.</p>
 
       <button class="btn btn-primary" id="settingsSaveBtn" style="margin-top:10px">Save Settings</button>
     </div>
