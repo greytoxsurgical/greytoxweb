@@ -10,20 +10,22 @@
    ========================================================= */
 
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID"
+  apiKey: "AIzaSyB3etHr49OXjX-X3-DfoWZk1vbz_Y67ysg",
+  authDomain: "greytoxweb.firebaseapp.com",
+  databaseURL: "https://greytoxweb-default-rtdb.firebaseio.com",
+  projectId: "greytoxweb",
+  storageBucket: "greytoxweb.firebasestorage.app",
+  messagingSenderId: "316301158430",
+  appId: "1:316301158430:web:ea1bf7be8f81bae094a60f"
 };
+
 
 // Web3Forms access key — https://web3forms.com par free signup karke milegi.
 // Contact Us aur Make a Deal forms isi key se seedha email par pohanchte hain.
-const WEB3FORMS_ACCESS_KEY = "PASTE_YOUR_WEB3FORMS_ACCESS_KEY";
+const WEB3FORMS_ACCESS_KEY = "140c99f8-f54b-4fc1-bb41-171ccf847d1a";
 
 // Contact Us aur Make a Deal submissions inhi emails par jayengi (comma se multiple).
-const NOTIFY_EMAILS = "greytoxsurgical@gmail.com, sales@greytox.com";
+const NOTIFY_EMAILS = "greytoxsurgical@gmail.com";
 
 // Admin panel password (footer logo par 5 baar click karke access hota hai)
 const ADMIN_PASSWORD = "22332021";
