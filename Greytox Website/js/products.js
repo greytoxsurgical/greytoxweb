@@ -39,14 +39,25 @@ async function loadProducts(catId) {
   const root = document.getElementById("productsGrid");
   root.innerHTML = `<div class="skeleton" style="height:300px"></div><div class="skeleton" style="height:300px"></div><div class="skeleton" style="height:300px"></div><div class="skeleton" style="height:300px"></div>`;
   try {
-    let q = db.collection("products").orderBy("createdAt", "desc");
-    if (catId) q = db.collection("products").where("categoryId", "==", catId).orderBy("createdAt", "desc");
-    const snap = await q.get();
+    let snap;
+    if (catId) {
+      snap = await db.collection("products").where("categoryId", "==", catId).get();
+    } else {
+      snap = await db.collection("products").orderBy("createdAt", "desc").get();
+    }
     if (snap.empty) {
       root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Is category mein abhi koi product nahi hai.</div>`;
       return;
     }
-    root.innerHTML = snap.docs.map((d) => productCardHTML(d.id, d.data())).join("");
+    let docs = snap.docs;
+    if (catId) {
+      docs = docs.slice().sort((a, b) => {
+        const ta = a.data().createdAt?.toMillis ? a.data().createdAt.toMillis() : 0;
+        const tb = b.data().createdAt?.toMillis ? b.data().createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+    }
+    root.innerHTML = docs.map((d) => productCardHTML(d.id, d.data())).join("");
   } catch (e) {
     root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Products load nahi ho sake. (${escapeHtml(e.message)})</div>`;
   }

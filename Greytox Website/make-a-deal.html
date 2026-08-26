@@ -45,6 +45,12 @@
 
         <button type="submit" class="btn btn-primary btn-block" id="dealSubmit">Send Query</button>
       </form>
+      <div id="dealThankYou" style="display:none;text-align:center;padding:30px 10px">
+        <div style="width:62px;height:62px;border-radius:50%;background:var(--c-green-100);color:var(--c-green-700);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px">✓</div>
+        <h3 style="margin-bottom:8px">Thank You!</h3>
+        <p>Aapki inquiry mil gayi hai. Hamari sales team jald quote ke sath rabta karegi.</p>
+        <button class="btn btn-ghost btn-sm" style="margin-top:16px" onclick="document.getElementById('dealThankYou').style.display='none';document.getElementById('dealForm').style.display='block'">Send Another Inquiry</button>
+      </div>
     </div>
   </div>
 </section>

@@ -18,9 +18,10 @@
       <h2>Product Catalogs</h2>
       <p>Download our latest PDF catalogs for your reference or distribution.</p>
     </div>
-    <div class="grid grid-3" id="catalogList">
-      <div class="skeleton" style="height:100px"></div>
-      <div class="skeleton" style="height:100px"></div>
+    <div class="doc-grid" id="catalogList">
+      <div class="skeleton" style="height:320px"></div>
+      <div class="skeleton" style="height:320px"></div>
+      <div class="skeleton" style="height:320px"></div>
     </div>
   </div>
 </section>
@@ -33,7 +34,10 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/components.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
 (async function () {
   await initGreyToxPage("catalogs.html");
   const root = document.getElementById("catalogList");
@@ -46,18 +50,44 @@
     root.innerHTML = snap.docs.map((d) => {
       const c = d.data();
       return `
-      <a href="${c.fileUrl}" target="_blank" rel="noopener" class="cat-card">
-        <div class="cat-card__ico">📄</div>
-        <div class="cat-card__info">
-          <b>${escapeHtml(c.title)}</b>
-          <span>PDF · ${timeAgo(c.createdAt)}</span>
+      <div class="doc-card">
+        <div class="doc-card__thumb" id="thumb-${d.id}">
+          <div class="loader"></div>
         </div>
-      </a>`;
+        <div class="doc-card__body">
+          <h4>${escapeHtml(c.title)}</h4>
+          <span>PDF · ${timeAgo(c.createdAt)}</span>
+          <a href="${c.fileUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-sm btn-block" style="margin-top:12px">⬇ Download PDF</a>
+        </div>
+      </div>`;
     }).join("");
+
+    snap.docs.forEach((d) => renderPdfCover(d.id, d.data().fileUrl));
   } catch (e) {
     root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Load error.</div>`;
   }
 })();
+
+async function renderPdfCover(id, url) {
+  const box = document.getElementById(`thumb-${id}`);
+  if (!box) return;
+  try {
+    const pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 1 });
+    const scale = box.clientWidth ? (box.clientWidth * 2) / viewport.width : 1.5;
+    const scaledViewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    canvas.width = scaledViewport.width;
+    canvas.height = scaledViewport.height;
+    const ctx = canvas.getContext("2d");
+    await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
+    box.innerHTML = "";
+    box.appendChild(canvas);
+  } catch (e) {
+    box.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:40px">📄</div>`;
+  }
+}
 </script>
 </body>
 </html>

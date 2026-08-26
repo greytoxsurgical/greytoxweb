@@ -19,10 +19,9 @@ async function loadHomeCategories() {
         const c = d.data();
         return `
         <a href="products.html?cat=${encodeURIComponent(d.id)}" class="cat-card">
-          <div class="cat-card__ico">${c.icon || "⚕"}</div>
           <div class="cat-card__info">
             <b>${escapeHtml(c.name)}</b>
-            <span>${c.count || ""} instruments</span>
+            <span>View instruments →</span>
           </div>
         </a>`;
       })

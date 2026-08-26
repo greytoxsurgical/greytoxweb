@@ -49,6 +49,8 @@ let dealRowCount = 0;
         document.getElementById("dealRows").innerHTML = "";
         dealRowCount = 0;
         addDealRow();
+        document.getElementById("dealForm").style.display = "none";
+        document.getElementById("dealThankYou").style.display = "block";
       } else {
         console.error("Web3Forms response:", r);
         toast("Save ho gaya lekin email nahi ja saka.", "error");

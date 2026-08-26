@@ -4,7 +4,7 @@
    them live (see js/utils.js -> applyThemeColors)
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 :root{
   /* Brand palette — sampled from the GreyTox logo (metallic silver + surgical green) */
@@ -25,7 +25,7 @@
   --c-danger:#c0392b;
   --c-warn:#c98a12;
 
-  --font-display:'Barlow Condensed', sans-serif;
+  --font-display:'Plus Jakarta Sans', sans-serif;
   --font-body:'Inter', sans-serif;
 
   --radius:10px;
@@ -52,9 +52,8 @@ button{font-family:inherit;cursor:pointer}
 h1,h2,h3,h4{
   font-family:var(--font-display);
   font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.02em;
-  line-height:1.05;
+  letter-spacing:-.01em;
+  line-height:1.15;
   margin:0 0 .4em;
   color:var(--c-ink);
 }
@@ -344,18 +343,25 @@ h1,h2,h3,h4{
 }
 .cert-card__cap{padding:12px 14px;font-size:14px;font-weight:600}
 
+/* ---------- Catalog / document cards (PDF preview) ---------- */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+.doc-card{background:#fff;border:1px solid var(--c-silver-200);border-radius:var(--radius);overflow:hidden;transition:.2s}
+.doc-card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.doc-card__thumb{aspect-ratio:1/1.414;background:var(--c-silver-100);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.doc-card__thumb canvas{width:100%;height:100%;object-fit:cover}
+.doc-card__body{padding:14px}
+.doc-card__body h4{font-size:14.5px;margin:0 0 4px;font-family:var(--font-display)}
+.doc-card__body span{font-size:12px;color:var(--c-silver-700)}
+
 /* ---------- Catalog cards ---------- */
 .cat-card{
-  background:#fff;border:1px solid var(--c-silver-200);border-radius:var(--radius);padding:22px;
-  display:flex;align-items:center;gap:16px;
+  background:#fff;border:1px solid var(--c-silver-200);border-radius:var(--radius);padding:24px 22px;
+  display:flex;align-items:center;transition:.2s;
 }
-.cat-card__ico{
-  width:52px;height:52px;border-radius:10px;background:var(--c-ink);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
-}
+.cat-card:hover{border-color:var(--c-green-500);box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .cat-card__info{flex:1}
-.cat-card__info b{font-family:var(--font-display);font-size:17px;display:block}
-.cat-card__info span{font-size:12.5px;color:var(--c-silver-700)}
+.cat-card__info b{font-family:var(--font-display);font-size:17px;display:block;color:var(--c-ink)}
+.cat-card__info span{font-size:12.5px;color:var(--c-green-700);font-weight:600;margin-top:4px;display:inline-block}
 
 /* ---------- Footer ---------- */
 .site-footer{background:var(--c-ink);color:var(--c-silver-200);padding:60px 0 26px;margin-top:60px}
@@ -367,7 +373,7 @@ h1,h2,h3,h4{
 .footer-grid ul a{font-size:14px;color:var(--c-silver-400);transition:.15s}
 .footer-grid ul a:hover{color:#fff}
 .footer-logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
-.footer-logo img{height:50px;filter:brightness(0) invert(1);opacity:.92}
+.footer-logo img{height:74px;filter:brightness(0) invert(1);opacity:.95}
 .footer-about p{color:var(--c-silver-400);font-size:14px;max-width:34ch}
 .footer-social{display:flex;gap:10px;margin-top:16px}
 .footer-social a{
@@ -421,3 +427,29 @@ h1,h2,h3,h4{
   overflow:hidden;
 }
 .wa-float img{width:100%;height:100%;object-fit:cover}
+
+/* ---------- Extra mobile polish ---------- */
+@media (max-width:480px){
+  .container{padding:0 16px}
+  .section{padding:48px 0}
+  .hero{padding:56px 0 40px}
+  .hero__actions{flex-direction:column;width:100%}
+  .hero__actions .btn{width:100%}
+  .hero__stats{gap:20px}
+  .hero__stats div b{font-size:24px}
+  .sec-head{flex-direction:column;align-items:flex-start}
+  .chip-row{gap:8px}
+  .chip{padding:8px 14px;font-size:12.5px}
+  .p-card__row{flex-direction:column}
+  .form-card{padding:22px}
+  .testi-grid,.feature-grid,.grid-3,.grid-4{grid-template-columns:1fr!important}
+  .courier-strip{flex-direction:column;text-align:center}
+}
+.admin-table-wrap{width:100%;overflow-x:auto}
+@media (max-width:640px){
+  .admin-main{padding:18px 16px}
+  .admin-topbar{flex-wrap:wrap;gap:10px}
+  .admin-panel{padding:16px}
+  .stat-cards{grid-template-columns:1fr 1fr;gap:10px}
+  .admin-drawer{padding:20px 18px 90px}
+}

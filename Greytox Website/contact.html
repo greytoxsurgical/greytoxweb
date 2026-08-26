@@ -30,7 +30,7 @@
       <div id="contactInfo">
         <div class="skeleton" style="height:120px"></div>
       </div>
-      <div class="form-card">
+      <div class="form-card" id="contactFormCard">
         <form id="contactForm">
           <div class="form-grid">
             <div class="field"><label>Full Name</label><input type="text" name="name" required /></div>
@@ -44,6 +44,12 @@
           <div class="field"><label>Message</label><textarea name="message" required></textarea></div>
           <button type="submit" class="btn btn-primary btn-block" id="contactSubmit">Send Message</button>
         </form>
+        <div id="contactThankYou" style="display:none;text-align:center;padding:30px 10px">
+          <div style="width:62px;height:62px;border-radius:50%;background:var(--c-green-100);color:var(--c-green-700);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px">✓</div>
+          <h3 style="margin-bottom:8px">Thank You!</h3>
+          <p>Aapka message mil gaya hai. Hamari team jald aap se rabta karegi.</p>
+          <button class="btn btn-ghost btn-sm" style="margin-top:16px" onclick="document.getElementById('contactThankYou').style.display='none';document.getElementById('contactForm').style.display='block'">Send Another Message</button>
+        </div>
       </div>
     </div>
   </div>
@@ -80,6 +86,8 @@
       if (r.success) {
         toast("Message bhej diya gaya — hum jald reply karenge.");
         e.target.reset();
+        document.getElementById("contactForm").style.display = "none";
+        document.getElementById("contactThankYou").style.display = "block";
       } else {
         console.error("Web3Forms response:", r);
         toast("Message save ho gaya, lekin email nahi ja saka. Hum jald check karenge.", "error");

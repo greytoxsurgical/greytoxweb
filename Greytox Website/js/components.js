@@ -82,7 +82,6 @@ async function renderFooter() {
   const socials = [
     { key: "facebook", icon: "assets/icons/facebook.png", label: "Facebook" },
     { key: "instagram", icon: "assets/icons/instagram.png", label: "Instagram" },
-    { key: "whatsapp", icon: "assets/icons/whatsapp.png", label: "WhatsApp", isWa: true },
     { key: "tiktok", icon: "assets/icons/tiktok.png", label: "TikTok" },
     { key: "linkedin", icon: "assets/icons/linkedin.png", label: "LinkedIn" },
   ];
