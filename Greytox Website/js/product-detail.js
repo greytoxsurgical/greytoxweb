@@ -35,7 +35,7 @@
           ${p.studentOffer ? `<span class="badge off" style="position:static;display:inline-block;margin-bottom:10px">Student Offer -50%</span>` : ""}
           ${
             p.price != null
-              ? `<div class="price" style="font-size:24px;margin-bottom:16px">${p.oldPrice ? `<span class="old">Rs ${p.oldPrice}</span>` : ""}Rs ${p.price}</div>`
+              ? `<div class="price" style="font-size:24px;margin-bottom:16px">${p.oldPrice ? `<span class="old">$${p.oldPrice}</span>` : ""}$${p.price}</div>`
               : ""
           }
           <div class="rich-content">${p.description || "<p>No description provided.</p>"}</div>

@@ -40,7 +40,10 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/components.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
 (async function () {
   await initGreyToxPage("certificates.html");
   const root = document.getElementById("certGrid");
@@ -52,6 +55,16 @@
     }
     root.innerHTML = snap.docs.map((d) => {
       const c = d.data();
+      if (c.fileType === "pdf") {
+        return `
+        <div class="cert-card">
+          <div class="cert-card__img" id="certpdf-${d.id}">
+            <div class="loader"></div>
+            <div class="cert-card__lock">🔒 Hover to preview</div>
+          </div>
+          <div class="cert-card__cap">${escapeHtml(c.title)}</div>
+        </div>`;
+      }
       return `
       <div class="cert-card">
         <div class="cert-card__img">
@@ -61,10 +74,47 @@
         <div class="cert-card__cap">${escapeHtml(c.title)}</div>
       </div>`;
     }).join("");
+
+    snap.docs.forEach((d) => {
+      const c = d.data();
+      if (c.fileType === "pdf") renderCertPdf(d.id, c.imageUrl);
+    });
   } catch (e) {
     root.innerHTML = `<div class="empty-state" style="grid-column:1/-1">Load error.</div>`;
   }
 })();
+
+async function renderCertPdf(id, url) {
+  const box = document.getElementById(`certpdf-${id}`);
+  if (!box) return;
+  try {
+    const pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 1 });
+    const scale = box.clientWidth ? (box.clientWidth * 2) / viewport.width : 1.5;
+    const scaledViewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    canvas.width = scaledViewport.width;
+    canvas.height = scaledViewport.height;
+    canvas.style.filter = "blur(6px)";
+    canvas.style.transition = "filter .25s";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.objectFit = "cover";
+    const ctx = canvas.getContext("2d");
+    await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
+    box.innerHTML = "";
+    box.appendChild(canvas);
+    const lock = document.createElement("div");
+    lock.className = "cert-card__lock";
+    lock.textContent = "🔒 Hover to preview";
+    box.appendChild(lock);
+    box.addEventListener("mouseenter", () => (canvas.style.filter = "blur(2px)"));
+    box.addEventListener("mouseleave", () => (canvas.style.filter = "blur(6px)"));
+  } catch (e) {
+    box.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:40px">📄</div>`;
+  }
+}
 </script>
 </body>
 </html>

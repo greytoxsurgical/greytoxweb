@@ -19,13 +19,12 @@ const firebaseConfig = {
   appId: "1:316301158430:web:ea1bf7be8f81bae094a60f"
 };
 
-
 // Web3Forms access key — https://web3forms.com par free signup karke milegi.
 // Contact Us aur Make a Deal forms isi key se seedha email par pohanchte hain.
 const WEB3FORMS_ACCESS_KEY = "140c99f8-f54b-4fc1-bb41-171ccf847d1a";
 
 // Contact Us aur Make a Deal submissions inhi emails par jayengi (comma se multiple).
-const NOTIFY_EMAILS = "greytoxsurgical@gmail.com";
+const NOTIFY_EMAILS = "greytoxsurgical@gmail.com, sales@greytox.com";
 
 // Admin panel password (footer logo par 5 baar click karke access hota hai)
 const ADMIN_PASSWORD = "22332021";

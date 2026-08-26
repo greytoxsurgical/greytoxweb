@@ -294,8 +294,8 @@ function productDrawer(id, data) {
       </div>
 
       <div class="form-grid">
-        <div class="field"><label>Price (Rs, optional)</label><input type="number" id="pPrice" value="${data?.price ?? ""}" /></div>
-        <div class="field"><label>Old / Strike Price (optional)</label><input type="number" id="pOldPrice" value="${data?.oldPrice ?? ""}" /></div>
+        <div class="field"><label>Price ($, optional)</label><input type="number" id="pPrice" value="${data?.price ?? ""}" /></div>
+        <div class="field"><label>Old / Strike Price ($, optional)</label><input type="number" id="pOldPrice" value="${data?.oldPrice ?? ""}" /></div>
       </div>
       <div class="form-grid">
         <label style="display:flex;align-items:center;gap:8px;font-size:14px"><input type="checkbox" id="pStudent" ${data?.studentOffer ? "checked" : ""}/> Student Offer (50% off)</label>
@@ -437,50 +437,66 @@ async function renderCertificatesTab(root) {
       <form id="certForm">
         <div class="field"><label>Title</label><input type="text" id="certTitle" required placeholder="e.g. ISO 13485:2016" /></div>
         <div class="field">
+          <label>Certificate Type</label>
+          <div style="display:flex;gap:16px;margin-bottom:10px">
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="certType" value="image" checked /> Image (JPG/PNG)</label>
+            <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="certType" value="pdf" /> PDF File</label>
+          </div>
+        </div>
+        <div class="field">
           <label>Certificate Source</label>
           <div style="display:flex;gap:16px;margin-bottom:10px">
             <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="certSrc" value="file" checked /> Upload File</label>
             <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="radio" name="certSrc" value="url" /> Paste URL (Google Drive, etc.)</label>
           </div>
         </div>
-        <div class="field" id="certFileField"><label>Certificate Image (A4, auto blur-protected on site)</label><input type="file" id="certFile" accept="image/*" /></div>
+        <div class="field" id="certFileField"><label id="certFileLabel">Certificate Image (A4, auto blur-protected on site)</label><input type="file" id="certFile" accept="image/*" /></div>
         <div class="field" id="certUrlField" style="display:none">
-          <label>Image URL</label>
+          <label>File URL</label>
           <input type="url" id="certUrl" placeholder="https://drive.google.com/file/d/.../view" />
-          <p class="form-note">Google Drive link paste kar sakte hain — bas Drive file ki sharing "Anyone with the link" per honi chahiye. Link automatically convert ho jayega.</p>
+          <p class="form-note">Google Drive link paste kar sakte hain — bas Drive file ki sharing "Anyone with the link" per honi chahiye.</p>
         </div>
         <button type="submit" class="btn btn-primary btn-block" id="certSaveBtn">Upload</button>
       </form>
     `);
-    document.querySelectorAll('input[name="certSrc"]').forEach((r) => {
-      r.addEventListener("change", () => {
-        const isUrl = document.querySelector('input[name="certSrc"]:checked').value === "url";
-        document.getElementById("certFileField").style.display = isUrl ? "none" : "block";
-        document.getElementById("certUrlField").style.display = isUrl ? "block" : "none";
-        document.getElementById("certFile").required = !isUrl;
-      });
-    });
+    function syncCertFields() {
+      const isUrl = document.querySelector('input[name="certSrc"]:checked').value === "url";
+      const isPdf = document.querySelector('input[name="certType"]:checked').value === "pdf";
+      document.getElementById("certFileField").style.display = isUrl ? "none" : "block";
+      document.getElementById("certUrlField").style.display = isUrl ? "block" : "none";
+      document.getElementById("certFile").accept = isPdf ? "application/pdf" : "image/*";
+      document.getElementById("certFileLabel").textContent = isPdf ? "Certificate PDF" : "Certificate Image (A4, auto blur-protected on site)";
+      document.getElementById("certFile").required = !isUrl;
+    }
+    document.querySelectorAll('input[name="certSrc"],input[name="certType"]').forEach((r) => r.addEventListener("change", syncCertFields));
     document.getElementById("certForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("certSaveBtn");
       const useUrl = document.querySelector('input[name="certSrc"]:checked').value === "url";
+      const isPdf = document.querySelector('input[name="certType"]:checked').value === "pdf";
       btn.disabled = true; btn.textContent = useUrl ? "Saving..." : "Uploading...";
       try {
         let url;
         if (useUrl) {
           const raw = document.getElementById("certUrl").value.trim();
           if (!raw) { toast("URL daalain.", "error"); btn.disabled = false; btn.textContent = "Upload"; return; }
-          url = normalizeDriveImageUrl(raw);
+          url = isPdf ? raw : normalizeDriveImageUrl(raw);
         } else {
           const file = document.getElementById("certFile").files[0];
           if (!file) { btn.disabled = false; btn.textContent = "Upload"; return; }
-          const blob = await resizeImageA4(file);
-          const path = `certificates/${Date.now()}.jpg`;
-          url = await uploadToStorage(path, blob);
+          if (isPdf) {
+            const path = `certificates/${Date.now()}_${file.name}`;
+            url = await uploadToStorage(path, file);
+          } else {
+            const blob = await resizeImageA4(file);
+            const path = `certificates/${Date.now()}.jpg`;
+            url = await uploadToStorage(path, blob);
+          }
         }
         await db.collection("certificates").add({
           title: document.getElementById("certTitle").value.trim(),
           imageUrl: url,
+          fileType: isPdf ? "pdf" : "image",
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
         toast("Certificate saved.");

@@ -54,7 +54,7 @@ function productCardHTML(id, p) {
   const off = p.studentOffer ? `<span class="badge off">Student -50%</span>` : "";
   const price =
     p.price != null
-      ? `<span class="price">${p.oldPrice ? `<span class="old">Rs ${p.oldPrice}</span>` : ""}Rs ${p.price}</span>`
+      ? `<span class="price">${p.oldPrice ? `<span class="old">$${p.oldPrice}</span>` : ""}$${p.price}</span>`
       : `<span class="price muted" style="font-size:13px">Ask for price</span>`;
   return `
   <div class="card-product">
@@ -67,7 +67,7 @@ function productCardHTML(id, p) {
     <div class="card-product__body">
       <span class="card-product__cat">${escapeHtml(p.categoryName || "")}</span>
       <a href="product.html?id=${id}" class="card-product__name">${escapeHtml(p.name)}</a>
-      <p class="card-product__desc">${escapeHtml((p.shortDesc || stripHtml(p.description) || "").slice(0, 70))}</p>
+      <a href="product.html?id=${id}" class="card-product__more">Learn More →</a>
       <div class="card-product__foot">
         ${price}
         <a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"
