@@ -389,11 +389,13 @@ async function handleImgFiles(e) {
   const files = [...e.target.files];
   for (const file of files) {
     try {
+      toast(`Uploading ${file.name}...`);
       const blob = await resizeImageToSquare(file, 1080);
       const path = `products/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.jpg`;
-      const url = await uploadToStorage(path, blob);
+      const url = await uploadToStorage(path, blob, (pct) => toast(`Uploading ${file.name}... ${pct}%`));
       currentImages.push(url);
       renderImgGrid();
+      toast(`${file.name} uploaded.`);
     } catch (err) {
       toast("Image upload failed: " + err.message, "error");
     }
@@ -486,11 +488,11 @@ async function renderCertificatesTab(root) {
           if (!file) { btn.disabled = false; btn.textContent = "Upload"; return; }
           if (isPdf) {
             const path = `certificates/${Date.now()}_${file.name}`;
-            url = await uploadToStorage(path, file);
+            url = await uploadToStorage(path, file, (pct) => (btn.textContent = `Uploading... ${pct}%`));
           } else {
             const blob = await resizeImageA4(file);
             const path = `certificates/${Date.now()}.jpg`;
-            url = await uploadToStorage(path, blob);
+            url = await uploadToStorage(path, blob, (pct) => (btn.textContent = `Uploading... ${pct}%`));
           }
         }
         await db.collection("certificates").add({
@@ -535,7 +537,8 @@ async function renderAboutTab(root) {
     if (!file) return;
     try {
       const blob = await resizeImageA4(file, 1000);
-      const url = await uploadToStorage(`about/${Date.now()}.jpg`, blob);
+      toast("Uploading About image...");
+      const url = await uploadToStorage(`about/${Date.now()}.jpg`, blob, (pct) => toast(`Uploading About image... ${pct}%`));
       newImageUrl = url;
       document.getElementById("aboutImgPreview").src = url;
     } catch (err) { toast(err.message, "error"); }
@@ -623,7 +626,7 @@ function catalogDrawer(id) {
         const file = document.getElementById("catalogFile").files[0];
         if (!file) { btn.disabled = false; btn.textContent = "Upload"; return; }
         const path = `catalogs/${Date.now()}_${file.name}`;
-        url = await uploadToStorage(path, file);
+        url = await uploadToStorage(path, file, (pct) => (btn.textContent = `Uploading... ${pct}%`));
       }
       const payload = { title: document.getElementById("catalogTitle").value.trim(), fileUrl: url, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
       if (id) await db.collection("catalogs").doc(id).update(payload);
@@ -742,7 +745,7 @@ async function renderOrdersTab(root) {
         const file = document.getElementById("ordImgFile").files[0];
         if (file) {
           const blob = await resizeImageToSquare(file, 400);
-          imageUrl = await uploadToStorage(`orders/${Date.now()}.jpg`, blob);
+          imageUrl = await uploadToStorage(`orders/${Date.now()}.jpg`, blob, (pct) => (btn.textContent = `Uploading... ${pct}%`));
         }
         await db.collection("previousOrders").add({
           productName: document.getElementById("ordProduct").value.trim(),

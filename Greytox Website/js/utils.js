@@ -86,10 +86,36 @@ function resizeImageA4(file, maxWidth = 1240, quality = 0.92) {
 }
 
 /* ---------- Upload a blob/file to Firebase Storage, return download URL ---------- */
-async function uploadToStorage(path, blobOrFile) {
-  const ref = storage.ref(path);
-  await ref.put(blobOrFile);
-  return await ref.getDownloadURL();
+/* ---------- Upload a blob/file to Firebase Storage, return download URL ----------
+   Uses resumable upload with progress + timeout so failures show up
+   immediately instead of silently hanging on the "Uploading..." button. */
+function uploadToStorage(path, blobOrFile, onProgress) {
+  return new Promise((resolve, reject) => {
+    const ref = storage.ref(path);
+    const task = ref.put(blobOrFile);
+    const timeout = setTimeout(() => {
+      task.cancel();
+      reject(new Error("Upload 60 second se zyada time le raha hai — internet slow hai ya Firebase Storage Rules 'Publish' nahi hui. Storage → Rules mein check kar ke Publish karain."));
+    }, 60000);
+    task.on(
+      "state_changed",
+      (snap) => {
+        if (onProgress) onProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
+      },
+      (err) => {
+        clearTimeout(timeout);
+        if (err.code === "storage/unauthorized") {
+          reject(new Error("Upload allow nahi hua (permission denied). Firebase Console → Storage → Rules mein rules paste karke 'Publish' zaroor dabayain."));
+        } else {
+          reject(err);
+        }
+      },
+      async () => {
+        clearTimeout(timeout);
+        resolve(await task.snapshot.ref.getDownloadURL());
+      }
+    );
+  });
 }
 
 /* ---------- Live theme colors (admin-editable) ---------- */
